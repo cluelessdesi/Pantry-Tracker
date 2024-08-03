@@ -1,10 +1,36 @@
 // import Image from "next/image";
 // import styles from "./page.module.css";
+"use client"
 import {Box, Stack, Typography} from '@mui/material'
+import { firestore } from '@/firebase'
+import { collection, getDocs, query } from 'firebase/firestore'
+import { useEffect, useState } from 'react'
 
-const item = ['tomato', 'potato', 'onions', 'apples', 'oranges', 'garlic', 'kale', 'pomegrenate', 'tomato', 'potato', 'onions', 'apples', 'oranges', 'garlic', 'kale', 'pomegrenate']
+
+// const item = ['tomato', 'potato', 'onions', 'apples', 'oranges', 'pomegrenate', 'papaya', 'mango']
+
 
 export default function Home() {
+  
+  const [pantry, setPantry] = useState([])
+
+  useEffect(
+    () =>
+    {
+      const updatePantry = async() => {
+        const snapshot = query(collection(firestore, 'pantry'))
+        const docs = await getDocs(snapshot)
+        const pantryList = []
+        docs.forEach( (doc) => {
+          pantryList.push(doc.id)
+        })
+        // console.log(pantryList)
+        setPantry(pantryList)
+      }
+      updatePantry()
+    }, []
+  )
+
   return (
     <Box width="100wh" height="100vh"
     display={'flex'}
@@ -19,7 +45,7 @@ export default function Home() {
       </Typography>
     </Box>
     <Stack width="800px" height="300px" spacing={2} overflow={'auto'}>
-      {item.map((i) => (
+      {pantry.map((i) => (
         <Box
         key={i}
         width="100%"
